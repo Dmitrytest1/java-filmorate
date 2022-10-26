@@ -10,10 +10,11 @@ import java.time.LocalDate;
 public class User {
     @PositiveOrZero(message = "id can not be negative")
     private int id; // целочисленный идентификатор
-    @NotNull
-    @Email
+    @NotNull(message = "login must not be null")
+    @Email(message = "invalid email")
     private String email; // электронная почта
-    @NotBlank // Аннотированный элемент не должен быть нулевым и должен содержать хотя бы один непробельный символ
+    // @NotBlank - элемент не должен быть нулевым и должен содержать хотя бы один непробельный символ
+    @NotBlank(message = "login must not be empty")
     @CorrectLogin
     private String login; // логин пользователя
     private String name; // имя для отображения
