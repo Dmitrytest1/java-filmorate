@@ -15,9 +15,16 @@ import java.util.Map;
 @ToString
 public class UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
+    private static int id;
+
+    public int generateId() {
+        return ++id;
+    }
 
     public User create(User user) {
-        users.put(user.getId(), user);
+        int newTaskId = generateId();
+        user.setId(newTaskId);
+        users.put(newTaskId, user);
         return user;
     }
 

@@ -29,14 +29,26 @@ public class UserController {
     }
 
     @PostMapping
-    public User createFilm(@Valid @RequestBody User film) {
-        log.info("User added");
-        return userService.createUser(film);
+    public User createFilm(@Valid @RequestBody User user) {
+        if (userService.getAllUsers().containsKey(user.getId())) {
+            throw new RuntimeException("Пользователь уже есть в базе");
+        }
+        validate(user, "Добавлен");
+        return userService.createUser(user);
     }
 
     @PutMapping
     public User updateFilm(@RequestBody User user) {
-        log.info("User updated");
+        if (!userService.getAllUsers().containsKey(user.getId())) {
+            throw new RuntimeException("Пользователя нет в базе");
+        }
+        validate(user, "Обновлен");
         return userService.updateUser(user);
+    }
+
+    void validate(User user, String text) {
+        if (user.getName() == null || user.getName().isBlank())
+            user.setName(user.getLogin());
+        log.debug("{} пользователь: {}, email: {}", text, user.getName(), user.getEmail());
     }
 }

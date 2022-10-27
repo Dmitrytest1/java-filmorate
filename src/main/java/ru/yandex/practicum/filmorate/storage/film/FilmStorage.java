@@ -15,9 +15,16 @@ import java.util.Map;
 @ToString
 public class FilmStorage {
     private final Map<Integer, Film> films = new HashMap<>();
+    private static int id;
+
+    public int generateId() {
+        return ++id;
+    }
 
     public Film create(Film film) {
-        films.put(film.getId(), film);
+        int newTaskId = generateId();
+        film.setId(newTaskId);
+        films.put(newTaskId, film);
         return film;
     }
 
