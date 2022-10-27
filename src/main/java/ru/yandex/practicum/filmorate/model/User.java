@@ -13,8 +13,7 @@ public class User {
     @NotNull(message = "login must not be null")
     @Email(message = "invalid email")
     private String email; // электронная почта
-    // @NotBlank - элемент не должен быть нулевым и должен содержать хотя бы один непробельный символ
-    @NotBlank(message = "login must not be empty")
+    @NotBlank(message = "login must not be empty") // @NotBlank - элемент не должен быть нулевым и должен содержать хотя бы один непробельный символ
     @CorrectLogin
     private String login; // логин пользователя
     private String name; // имя для отображения
