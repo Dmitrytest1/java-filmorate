@@ -1,14 +1,14 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Data;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 import ru.yandex.practicum.filmorate.annotations.CorrectReleaseDay;
 
 @Data
+@AllArgsConstructor
 public class Film {
     @PositiveOrZero(message = "id can not be negative")
     private int id; // целочисленный идентификатор
@@ -20,5 +20,4 @@ public class Film {
     private LocalDate releaseDate; // дата релиза
     @PositiveOrZero(message = "duration can not be negative")
     private Integer duration; // продолжительность фильма
-    private Integer rate; // рейтинг
 }

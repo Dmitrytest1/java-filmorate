@@ -2,8 +2,8 @@ package ru.yandex.practicum.filmorate.annotations;
 
 import ru.yandex.practicum.filmorate.validator.FilmReleaseDateValidator;
 
-import jakarta.validation.Constraint;
-import jakarta.validation.Payload;
+import javax.validation.Constraint;
+import javax.validation.Payload;
 import java.lang.annotation.*;
 
 // @Target - параметр, указывающий, для каких видов аннтоцаия может быть применена
@@ -19,3 +19,4 @@ public @interface CorrectReleaseDay {
 
     Class<? extends Payload>[] payload() default {};
 }
+

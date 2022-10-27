@@ -1,9 +1,8 @@
 package ru.yandex.practicum.filmorate.validator;
 
 import ru.yandex.practicum.filmorate.annotations.CorrectLogin;
-
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
 public class LoginValidator implements ConstraintValidator<CorrectLogin, String> {
     @Override
