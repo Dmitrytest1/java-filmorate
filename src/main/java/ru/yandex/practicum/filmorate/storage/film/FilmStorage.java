@@ -6,23 +6,23 @@ import lombok.ToString;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @Getter
 @EqualsAndHashCode
 @ToString
 public class FilmStorage {
-    public List<Film> films = new ArrayList<>();
+    private final Map<Integer, Film> films = new HashMap<>();
 
     public Film create(Film film) {
-        films.add(film);
+        films.put(film.getId(), film);
         return film;
     }
 
     public Film update(Film film) {
-        films.set(film.getId(), film);
+        films.put(film.getId(), film);
         return film;
     }
 }

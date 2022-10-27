@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -17,16 +19,20 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getFilms() {
-        return filmService.getAllFilms();
+        List<Film> filmsList= new ArrayList<>(filmService.getAllFilms().values());
+        log.debug("Количество фильмов: {}", filmsList.size());
+        return filmsList;
     }
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
+        log.info("Film added");
         return filmService.createFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@RequestBody Film film) {
+        log.info("Film updated");
         return filmService.updateFilm(film);
     }
 }

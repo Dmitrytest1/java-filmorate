@@ -6,23 +6,23 @@ import lombok.ToString;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @Getter
 @EqualsAndHashCode
 @ToString
 public class UserStorage {
-    public List<User> users = new ArrayList<>();
+    private final Map<Integer, User> users = new HashMap<>();
 
     public User create(User user) {
-        users.add(user);
+        users.put(user.getId(), user);
         return user;
     }
 
     public User update(User user) {
-        users.set(user.getId(), user);
+        users.put(user.getId(), user);
         return user;
     }
 }

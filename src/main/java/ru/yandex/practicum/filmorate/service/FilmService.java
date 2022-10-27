@@ -4,14 +4,14 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import java.util.List;
+import java.util.Map;
 
 @Component
 @AllArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
 
-    public List<Film> getAllFilms() {
+    public Map<Integer, Film> getAllFilms() {
         return filmStorage.getFilms();
     }
 
