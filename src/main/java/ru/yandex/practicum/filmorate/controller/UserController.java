@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,7 +15,6 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 @RestController
 @RequestMapping("/users")
 @AllArgsConstructor
