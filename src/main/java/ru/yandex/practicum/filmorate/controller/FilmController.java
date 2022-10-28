@@ -1,14 +1,18 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import javax.validation.Valid;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,11 +22,10 @@ import java.util.List;
 @Slf4j
 public class FilmController {
     private final FilmService filmService;
-    private static final LocalDate START_DATA = LocalDate.of(1895, 12, 28);
 
     @GetMapping
     public List<Film> getFilms() {
-        List<Film> filmsList= new ArrayList<>(filmService.getAllFilms().values());
+        List<Film> filmsList = new ArrayList<>(filmService.getAllFilms().values());
         log.debug("Количество фильмов: {}", filmsList.size());
         return filmsList;
     }
@@ -32,7 +35,7 @@ public class FilmController {
         if (filmService.getAllFilms().containsKey(film.getId())) {
             throw new RuntimeException("Фильм уже есть в базе");
         }
-        validate(film, "Добавлен");
+        filmService.validateReleaseDate(film, "Добавлен");
         return filmService.createFilm(film);
     }
 
@@ -41,13 +44,8 @@ public class FilmController {
         if (!filmService.getAllFilms().containsKey(film.getId())) {
             throw new RuntimeException("Фильм нет в базе");
         }
-        validate(film, "Обновлен");
+        filmService.validateReleaseDate(film, "Обновлен");
         return filmService.updateFilm(film);
     }
 
-    void validate(Film film, String text) {
-        if (film.getReleaseDate().isBefore(START_DATA))
-            throw new ValidationException("Дата релиза не может быть раньше " + START_DATA);
-        log.debug("{} фильм: {}", text, film.getName());
-    }
 }

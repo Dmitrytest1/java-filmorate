@@ -1,11 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
 
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Film;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -33,7 +36,7 @@ public class UserController {
         if (userService.getAllUsers().containsKey(user.getId())) {
             throw new RuntimeException("Пользователь уже есть в базе");
         }
-        validate(user, "Добавлен");
+        userService.setUserNameByLogin(user, "Добавлен");
         return userService.createUser(user);
     }
 
@@ -42,13 +45,8 @@ public class UserController {
         if (!userService.getAllUsers().containsKey(user.getId())) {
             throw new RuntimeException("Пользователя нет в базе");
         }
-        validate(user, "Обновлен");
+        userService.setUserNameByLogin(user, "Обновлен");
         return userService.updateUser(user);
     }
 
-    void validate(User user, String text) {
-        if (user.getName() == null || user.getName().isBlank())
-            user.setName(user.getLogin());
-        log.debug("{} пользователь: {}, email: {}", text, user.getName(), user.getEmail());
-    }
 }
