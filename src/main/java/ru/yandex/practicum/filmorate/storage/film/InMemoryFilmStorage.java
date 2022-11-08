@@ -58,11 +58,23 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Film getFilmById(Integer id) {
+        if (!films.containsKey(id)) {
+            throw new FilmNotFoundException(String.format("Фильм с id=%d не найден", id));
+        }
+        return films.get(id);
+    }
+
+    @Override
     public List<Film> getFilmsPopular(Integer count) {
-        return films.values()
-                .stream()
-                .filter(film -> film.getLikes() != null)
-                .sorted(Comparator.comparingInt(f -> -f.getLikes().size()))
+//        return films.values()
+//                .stream()
+//                .filter(film -> film.getLikes() != null)
+//                .sorted(Comparator.comparingInt(f -> -f.getLikes().size()))
+//                .limit(count)
+//                .collect(Collectors.toList());
+        return getAllFilms().stream()
+                .sorted((t1, t2) -> t2.getLikes().size() - t1.getLikes().size())
                 .limit(count)
                 .collect(Collectors.toList());
     }

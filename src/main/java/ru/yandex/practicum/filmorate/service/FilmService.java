@@ -23,6 +23,10 @@ public class FilmService {
         return filmStorage.getAllFilms();
     }
 
+    public Film getFilmById(Integer id) {
+        return filmStorage.getFilmById(id);
+    }
+
     public List<Film> getFilmsPopular(Integer count) {
         if (count < 0) {
             throw new IllegalArgumentException("Поле 'count' должно быть положительным");
