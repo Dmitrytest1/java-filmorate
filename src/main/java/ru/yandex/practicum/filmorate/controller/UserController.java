@@ -15,6 +15,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
@@ -60,8 +61,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> findMutualFriends(@PathVariable("id") Integer id,
-                                        @PathVariable("otherId") Integer otherId) {
+    public Set<User> getMutualFriends(@PathVariable("id") Integer id,
+                                      @PathVariable("otherId") Integer otherId) {
         return userService.getMutualFriends(id, otherId);
     }
 }
