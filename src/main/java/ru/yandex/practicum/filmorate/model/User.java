@@ -48,4 +48,11 @@ public class User {
     public void deleteFriend(Integer id) {
         friends.remove(id);
     }
+
+    public Set<Integer> getFriendsId() {
+        if (friends == null) {
+            friends = new HashSet<>();
+        }
+        return friends;
+    }
 }

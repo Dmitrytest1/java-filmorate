@@ -88,10 +88,13 @@ public class UserService {
 //    }
 
     public Set<User> getMutualFriends(Integer userId, Integer otherId) {
-        return getUserById(userId).getFriends().stream()
-                .filter(u -> userStorage.getUserById(otherId).getFriends().contains(u))
-                .map(userStorage::getUserById)
-                .collect(Collectors.toSet());
+//        return getUserById(userId).getFriends().stream()
+//                .filter(u -> userStorage.getUserById(otherId).getFriends().contains(u))
+//                .map(userStorage::getUserById)
+//                .collect(Collectors.toSet());
+        return getUserById(userId).getFriendsId().stream()
+                .filter(getUserById(otherId).getFriendsId()::contains)
+                .map(this::getUserById).collect(Collectors.toSet());
     }
 
     public void setUserNameByLogin(User user, String text) {
