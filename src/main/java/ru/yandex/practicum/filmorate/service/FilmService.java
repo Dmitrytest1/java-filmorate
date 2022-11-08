@@ -28,9 +28,6 @@ public class FilmService {
     }
 
     public List<Film> getFilmsPopular(Integer count) {
-        if (count < 0) {
-            throw new IllegalArgumentException("Поле 'count' должно быть положительным");
-        }
         return filmStorage.getFilmsPopular(count);
     }
 

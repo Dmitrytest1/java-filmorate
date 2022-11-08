@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,13 +66,8 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getFilmsPopular(Integer count) {
-//        return films.values()
-//                .stream()
-//                .filter(film -> film.getLikes() != null)
-//                .sorted(Comparator.comparingInt(f -> -f.getLikes().size()))
-//                .limit(count)
-//                .collect(Collectors.toList());
         return getAllFilms().stream()
+                .filter(film -> film.getLikes() != null)
                 .sorted((t1, t2) -> t2.getLikes().size() - t1.getLikes().size())
                 .limit(count)
                 .collect(Collectors.toList());

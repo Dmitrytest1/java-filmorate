@@ -57,6 +57,7 @@ public class FilmController {
     @GetMapping("/popular")
     public List<Film> getFilmsPopular(
             @RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
+        System.out.println("count: " + count);
         if (count <= 0) {
             throw new IncorrectParameterException("count");
         }
