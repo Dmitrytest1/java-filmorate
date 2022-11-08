@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.FilmFoundException;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -34,7 +36,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film create(Film film) {
         if (films.containsKey(film.getId())) {
-            throw new RuntimeException("Фильм уже есть в базе");
+            throw new FilmFoundException("Фильм уже есть в базе");
         }
         int newTaskId = generateId();
         film.setId(newTaskId);
@@ -45,7 +47,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film update(Film film) {
         if (!films.containsKey(film.getId())) {
-            throw new RuntimeException("Фильм нет в базе");
+            throw new FilmNotFoundException("Фильм нет в базе");
         }
         films.put(film.getId(), film);
         return film;
