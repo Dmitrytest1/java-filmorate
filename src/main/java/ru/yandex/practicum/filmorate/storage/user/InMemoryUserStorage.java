@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -33,7 +31,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User create(User user) {
         if (users.containsKey(user.getId())) {
-            throw new UserFoundException("Пользователь уже есть в базе");
+            throw new UserFoundException(String.format("Пользователь с id=%d есть в базе", user.getId()));
         }
         int newTaskId = generateId();
         user.setId(newTaskId);
@@ -44,7 +42,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User update(User user) {
         if (!users.containsKey(user.getId())) {
-            throw new UserNotFoundException("Пользователя нет в базе");
+            throw new UserNotFoundException(String.format("Пользователя с id=%d нет в базе", user.getId()));
         }
         users.put(user.getId(), user);
         return user;
@@ -58,11 +56,11 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Optional<User> getUserById(Integer id) {
+    public User getUserById(Integer id) {
         if (!users.containsKey(id)) {
-            throw new NotFoundException("id", String.format("Пользователь с id=%d не найден", id));
+            throw new UserNotFoundException(String.format("Пользователь с id=%d не найден", id));
         }
-        return Optional.ofNullable(users.get(id));
+        return users.get(id);
     }
 
     @Override

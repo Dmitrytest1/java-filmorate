@@ -11,13 +11,10 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -36,7 +33,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film create(Film film) {
         if (films.containsKey(film.getId())) {
-            throw new FilmFoundException("Фильм уже есть в базе");
+            throw new FilmFoundException(String.format("Фильм с id=%d есть в базе", film.getId()));
         }
         int newTaskId = generateId();
         film.setId(newTaskId);
@@ -47,7 +44,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film update(Film film) {
         if (!films.containsKey(film.getId())) {
-            throw new FilmNotFoundException("Фильм нет в базе");
+            throw new FilmNotFoundException(String.format("Фильма с id=%d нет в базе", film.getId()));
         }
         films.put(film.getId(), film);
         return film;
