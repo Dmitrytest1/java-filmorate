@@ -10,6 +10,8 @@ import lombok.Data;
 import ru.yandex.practicum.filmorate.annotations.CorrectLogin;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class User {
@@ -31,4 +33,17 @@ public class User {
      */
     @PastOrPresent
     private LocalDate birthday;
+
+    private Set<Integer> friends;
+
+    public void addFriend(Integer id) {
+        if (friends == null) {
+            friends = new HashSet<>();
+        }
+        friends.add(id);
+    }
+
+    public void deleteFriend(Integer id) {
+        friends.remove(id);
+    }
 }
