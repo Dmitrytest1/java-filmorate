@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -14,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Valid
 public class User {
     @PositiveOrZero(message = "id can not be negative")
     private int id;

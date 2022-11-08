@@ -4,10 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.CustomValidationException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,37 +53,28 @@ public class UserService {
      * Добавление в список друзей
      */
     public void addFriend(Integer userId, Integer friendId) {
-        if (getUserById(userId).getFriends() == null) {
-            getUserById(userId).addFriend(friendId);
-            getUserById(friendId).addFriend(userId);
-            log.debug("Пользователь с id {} добавил в список друзей пользователя с id {}", userId, friendId);
-        } else {
-            if (!(getUserById(userId).getFriends().contains(friendId))) {
-                getUserById(userId).addFriend(friendId);
-                getUserById(friendId).addFriend(userId);
-                log.debug("Пользователь с id {} добавил в список друзей пользователя с id {}", userId, friendId);
-            } else throw new CustomValidationException("Пользователи уже состоят в друзьях");
-        }
+        User user = getUserById(userId);
+        User friend = getUserById(friendId);
+        user.addFriend(friendId);
+        friend.addFriend(userId);
+        log.debug("Пользователь с id {} добавил в список друзей пользователя с id {}", userId, friendId);
     }
 
     /**
      * Удаление из списка друзей
      */
     public void deleteFriend(Integer userId, Integer friendId) {
-        if (getUserById(userId).getFriends().contains(friendId)) {
-            getUserById(userId).getFriends().remove(friendId);
-            getUserById(friendId).getFriends().remove(userId);
-            log.debug("Пользователь с id {} удален из списка друзей пользователем с id {}", userId, friendId);
-        } else throw new CustomValidationException("Пользователи не состоят в друзьях");
+        User user = getUserById(userId);
+        User friend = getUserById(friendId);
+        user.getFriends().remove(friendId);
+        friend.getFriends().remove(userId);
+        log.debug("Пользователь с id {} удален из списка друзей пользователем с id {}", userId, friendId);
     }
 
     /**
      * Получение всех друзей пользователя
      */
     public List<User> getUserFriends(Integer userId) {
-        if (userId < 0) {
-            throw new IllegalArgumentException("id должен быть положительным");
-        }
         return userStorage.getUserFriends(userId);
     }
 
