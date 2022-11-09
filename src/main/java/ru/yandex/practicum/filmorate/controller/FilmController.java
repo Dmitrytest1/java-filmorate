@@ -59,5 +59,4 @@ public class FilmController {
             @RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
         return filmService.getFilmsPopular(count);
     }
-
 }
