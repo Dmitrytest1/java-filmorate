@@ -8,12 +8,12 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import ru.yandex.practicum.filmorate.annotations.CorrectReleaseDay;
 
 @Data
-@AllArgsConstructor
 public class Film {
     @PositiveOrZero(message = "id can not be negative")
     private int id;
@@ -31,6 +31,14 @@ public class Film {
     private Integer duration;
 
     private Set<Integer> likes;
+
+    public Film(String name, String description, LocalDate releaseDate, Integer duration, Set<Integer> likes) {
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.likes = Objects.requireNonNullElseGet(likes, HashSet::new);
+    }
 
     public void addLike(Integer id) {
         if (likes == null) {
