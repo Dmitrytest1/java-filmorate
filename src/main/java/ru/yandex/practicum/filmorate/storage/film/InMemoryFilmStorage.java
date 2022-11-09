@@ -68,10 +68,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Film> getFilmsPopular(Integer count) {
         return getAllFilms()
                 .stream()
-                .sorted((o1, o2) -> {
-                    int result = Integer.valueOf(o1.getLikes().size()).compareTo(Integer.valueOf(o2.getLikes().size()));
-                    return result * -1;
-                }).limit(count)
+                .filter(film -> film.getLikes() != null)
+                .sorted((t1, t2) -> t2.getLikes().size() - t1.getLikes().size())
+                .limit(count)
                 .collect(Collectors.toList());
     }
 
