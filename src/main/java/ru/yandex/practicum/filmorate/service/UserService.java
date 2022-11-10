@@ -82,9 +82,11 @@ public class UserService {
      * Получение общих друзей с другим пользователем
      */
     public Set<User> getMutualFriends(Integer userId, Integer otherId) {
-        return getUserById(userId).getFriendsId().stream()
+        return getUserById(userId).getFriendsId()
+                .stream()
                 .filter(getUserById(otherId).getFriendsId()::contains)
-                .map(this::getUserById).collect(Collectors.toSet());
+                .map(this::getUserById)
+                .collect(Collectors.toSet());
     }
 
     public void setUserNameByLogin(User user, String text) {

@@ -1,9 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.UserFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
@@ -16,10 +12,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-@Slf4j
-@Getter
-@EqualsAndHashCode
-@ToString
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
     private static int id;
@@ -50,9 +42,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public List<User> getAllUsers() {
-        List<User> usersList = new ArrayList<>(users.values());
-        log.debug("Количество пользователей: {}", usersList.size());
-        return usersList;
+        return new ArrayList<>(users.values());
     }
 
     @Override
