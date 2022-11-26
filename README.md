@@ -1,7 +1,10 @@
 # java-filmorate
 
 ### Схема БД
-![](C:\evgeniybudaev\CODE\Java\Yandex\Spring\sprint11\java-filmorate\src\main\resources\schema.png)
+<picture>
+    <source media="(prefers-color-scheme: dark)" srcset="src/main/resources/schema.png">
+    <img src="src/main/resources/schema.png">
+</picture>
 
 ### Код из dbdiagram.io
 ```
