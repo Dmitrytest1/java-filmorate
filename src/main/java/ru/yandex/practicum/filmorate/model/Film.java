@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -31,6 +30,8 @@ public class Film {
     private Integer duration;
 
     private Set<Integer> likes;
+    private Set<Genre> genres = new HashSet<>();
+    private Mpa mpa;
 
     public Film(String name, String description, LocalDate releaseDate, Integer duration, Set<Integer> likes) {
         this.name = name;
