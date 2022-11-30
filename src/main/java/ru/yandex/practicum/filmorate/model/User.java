@@ -8,6 +8,7 @@ import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.PositiveOrZero;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.annotations.CorrectLogin;
 
@@ -17,6 +18,7 @@ import java.util.Set;
 
 @Data
 @Valid
+@AllArgsConstructor
 public class User {
     @PositiveOrZero(message = "id can not be negative")
     private int id;
@@ -29,6 +31,7 @@ public class User {
     @CorrectLogin
     private String login;
 
+    @NotBlank(message = "name must not be empty")
     private String name;
 
     /**

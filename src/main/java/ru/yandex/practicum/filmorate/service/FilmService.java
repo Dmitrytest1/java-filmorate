@@ -1,23 +1,30 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @Slf4j
-@AllArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+    private final UserService userService;
     private static final LocalDate START_DATA = LocalDate.of(1895, 12, 28);
+
+    @Autowired
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage,
+                       @Autowired(required = false) UserService userService) {
+        this.filmStorage = filmStorage;
+        this.userService = userService;
+    }
+
 
     public List<Film> getAllFilms() {
         return filmStorage.getAllFilms();
@@ -42,13 +49,13 @@ public class FilmService {
     }
 
     public void addLike(Integer filmId, Integer userId) {
-        userStorage.getUserById(userId);
+        userService.getUserById(userId);
         filmStorage.addLike(filmId, userId);
         log.info("like for film with id={} added", filmId);
     }
 
     public void deleteLike(Integer filmId, Integer userId) {
-        userStorage.getUserById(userId);
+        userService.getUserById(userId);
         filmStorage.deleteLike(filmId, userId);
         log.info("like for film with id={} deleted", filmId);
     }
