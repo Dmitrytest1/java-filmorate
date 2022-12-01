@@ -37,7 +37,7 @@ public class FilmDbStorage  implements FilmStorage {
     @Override
     public Film create(Film film) {
         String sqlQuery = "insert into FILM " +
-                "(Name, Description, ReleaseDate, Duration, MpaID) " +
+                "(Name, Description, ReleaseDate, Duration, RatingID) " +
                 "values (?, ?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -76,7 +76,7 @@ public class FilmDbStorage  implements FilmStorage {
     @Override
     public Film getFilmById(Integer filmId) {
         String sqlFilm = "select * from FILM " +
-                "INNER JOIN MPA R on FILM.MpaID = R.MpaID " +
+                "INNER JOIN RATINGMPA R on FILM.RATINGID = R.RATINGID " +
                 "where FilmID = ?";
         Film film;
         try {
@@ -113,8 +113,9 @@ public class FilmDbStorage  implements FilmStorage {
                 rs.getString("Description"),
                 Objects.requireNonNull(rs.getDate("ReleaseDate")).toLocalDate(),
                 rs.getInt("Duration"),
-                new Mpa(rs.getInt("Mpa.MpaID"),
-                        rs.getString("Mpa.Name")),
+                new Mpa(rs.getInt("RatingMPA.RatingID"),
+                        rs.getString("RatingMPA.Name"),
+                        rs.getString("RatingMPA.Description")),
                 (Set<Genre>) genreService.getFilmGenres(filmId),
                 (Set<Integer>) getFilmLikes(filmId)
         );
