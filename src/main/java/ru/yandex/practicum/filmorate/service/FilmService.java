@@ -4,23 +4,30 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.FilmValidationException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Slf4j
 public class FilmService {
+    private static int increment = 0;
+    private final Validator validator;
     private final FilmStorage filmStorage;
     private final UserService userService;
     private static final LocalDate START_DATA = LocalDate.of(1895, 12, 28);
 
     @Autowired
-    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage,
+    public FilmService(Validator validator, @Qualifier("FilmDbStorage") FilmStorage filmStorage,
                        @Autowired(required = false) UserService userService) {
+        this.validator = validator;
         this.filmStorage = filmStorage;
         this.userService = userService;
     }
@@ -39,11 +46,13 @@ public class FilmService {
     }
 
     public Film createFilm(Film film) {
+        validate(film);
         validateReleaseDate(film, "Добавлен");
         return filmStorage.create(film);
     }
 
     public Film updateFilm(Film film) {
+        validate(film);
         validateReleaseDate(film, "Обновлен");
         return filmStorage.update(film);
     }
@@ -65,5 +74,23 @@ public class FilmService {
             throw new ValidationException("Дата релиза не может быть раньше " + START_DATA);
         }
         log.debug("{} фильм: {}", text, film.getName());
+    }
+
+    private void validate(Film film) {
+        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+        if (!violations.isEmpty()) {
+            StringBuilder messageBuilder = new StringBuilder();
+            for (ConstraintViolation<Film> filmConstraintViolation : violations) {
+                messageBuilder.append(filmConstraintViolation.getMessage());
+            }
+            throw new FilmValidationException("Ошибка валидации Фильма: " + messageBuilder, violations);
+        }
+        if (film.getId() == 0) {
+            film.setId(getNextId());
+        }
+    }
+
+    private static int getNextId() {
+        return ++increment;
     }
 }

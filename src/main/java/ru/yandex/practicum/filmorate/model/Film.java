@@ -9,8 +9,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import ru.yandex.practicum.filmorate.annotations.CorrectReleaseDay;
 
@@ -36,12 +37,12 @@ public class Film {
     @NotNull
     private Mpa mpa;
 
-    private Set<Genre> genres = new HashSet<>();
-    private Set<Integer> likes = new HashSet<>();
+    private List<Genre> genres = new ArrayList<>();
+    private List<Integer> likes = new ArrayList<>();
 
     public void addLike(Integer id) {
         if (likes == null) {
-            likes = new HashSet<>();
+            likes = new ArrayList<>();
         }
         likes.add(id);
     }

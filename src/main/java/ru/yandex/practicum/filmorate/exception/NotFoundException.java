@@ -12,6 +12,11 @@ public class NotFoundException extends RuntimeException {
         this.parameter = parameter;
     }
 
+    public NotFoundException(String parameter) {
+        super(parameter);
+        this.parameter = parameter;
+    }
+
     public String getParameter() {
         return parameter;
     }
