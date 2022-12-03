@@ -34,7 +34,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User update(User user) {
         if (!users.containsKey(user.getId())) {
-            throw new UserNotFoundException(String.format("Пользователя с id=%d нет в базе", user.getId()));
+            throw new UserNotFoundException(String.format("Пользователь с идентификатором %d не зарегистрирован!", user.getId()));
         }
         users.put(user.getId(), user);
         return user;
@@ -59,5 +59,15 @@ public class InMemoryUserStorage implements UserStorage {
                 .stream()
                 .map(users::get)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void addFriend(Integer userId, Integer friendId) {
+
+    }
+
+    @Override
+    public void deleteFriend(Integer userId, Integer friendId) {
+
     }
 }

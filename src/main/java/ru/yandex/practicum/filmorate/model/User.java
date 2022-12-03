@@ -7,18 +7,19 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.PositiveOrZero;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.annotations.CorrectLogin;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Valid
 @AllArgsConstructor
+@NoArgsConstructor
 public class User {
     @PositiveOrZero(message = "id can not be negative")
     private int id;
@@ -37,21 +38,21 @@ public class User {
     /**
      * Дата рождения должна быть моментом, датой или временем в прошлом или настоящем
      */
-    @PastOrPresent
+    @PastOrPresent(message = "Дата рождения должна быть моментом, датой или временем в прошлом или настоящем")
     private LocalDate birthday;
 
-    private Set<Integer> friends;
+    private List<Integer> friends;
 
     public void addFriend(Integer id) {
         if (friends == null) {
-            friends = new HashSet<>();
+            friends = new ArrayList<>();
         }
         friends.add(id);
     }
 
-    public Set<Integer> getFriendsId() {
+    public List<Integer> getFriendsId() {
         if (friends == null) {
-            friends = new HashSet<>();
+            friends = new ArrayList<>();
         }
         return friends;
     }

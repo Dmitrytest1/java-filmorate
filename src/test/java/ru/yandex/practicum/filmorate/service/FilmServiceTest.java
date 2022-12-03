@@ -8,8 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.FilmValidationException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
@@ -39,7 +37,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    void shouldAddWhenAddValidFilmData() {
+    void shouldAddValidFilm() {
         Film addedFilm = service.createFilm(film);
         assertNotEquals(0, addedFilm.getId());
     }

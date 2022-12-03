@@ -24,11 +24,24 @@ public class GenreService {
         return genreDbStorage.getAllGenres();
     }
 
+    public Genre getGenreById(String supposedId) {
+        int genreId = parseId(supposedId);
+        return genreDbStorage.getGenreById(genreId);
+    }
+
     public List<Genre> getFilmGenres(int filmId) {
         return genreDbStorage.getGenresByFilmId(filmId);
     }
 
     public boolean deleteFilmGenres(int filmId) {
         return genreDbStorage.deleteFilmGenres(filmId);
+    }
+
+    private Integer parseId(final String supposedInt) {
+        try {
+            return Integer.valueOf(supposedInt);
+        } catch (NumberFormatException exception) {
+            return Integer.MIN_VALUE;
+        }
     }
 }
