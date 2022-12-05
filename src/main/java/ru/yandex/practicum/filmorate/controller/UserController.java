@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+    public void addFriend(@PathVariable String id, @PathVariable String friendId) {
         userService.addFriend(id, friendId);
     }
 
@@ -56,7 +56,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> getFriendsSet(@PathVariable Integer id) {
+    public List<User> getFriends(@PathVariable String id) {
         return userService.getUserFriends(id);
     }
 

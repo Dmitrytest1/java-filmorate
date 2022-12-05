@@ -4,14 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserValidationException;
+import ru.yandex.practicum.filmorate.exception.WrongIdException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,12 +63,10 @@ public class UserService {
     /**
      * Добавление в список друзей
      */
-    public void addFriend(Integer userId, Integer friendId) {
-        User user = getUserById(userId);
-        User friend = getUserById(friendId);
-        user.addFriend(friendId);
-        friend.addFriend(userId);
-        log.debug("Пользователь с id {} добавил в список друзей пользователя с id {}", userId, friendId);
+    public void addFriend(String userId, String friendId) {
+        User user = getStoredUser(userId);
+        User friend = getStoredUser(friendId);
+        userStorage.addFriend(user.getId(), friend.getId());
     }
 
     /**
@@ -84,8 +83,13 @@ public class UserService {
     /**
      * Получение всех друзей пользователя
      */
-    public List<User> getUserFriends(Integer userId) {
-        return userStorage.getUserFriends(userId);
+    public List<User> getUserFriends(final String userId) {
+        User user = getStoredUser(userId);
+        List<User> friends = new ArrayList<>();
+        for (Integer id : user.getFriends()) {
+            friends.add(userStorage.getUserById(id));
+        }
+        return friends;
     }
 
     /**
@@ -126,6 +130,28 @@ public class UserService {
         if (user.getId() == 0) {
             user.setId(++increment);
         }
+    }
+
+    private Integer idFromString(final String supposedId) {
+        try {
+            return Integer.valueOf(supposedId);
+        } catch (NumberFormatException exception) {
+            return Integer.MIN_VALUE;
+        }
+    }
+
+    private User getStoredUser(final String supposedId) {
+        final int userId = idFromString(supposedId);
+        if (userId == Integer.MIN_VALUE) {
+            throw new WrongIdException("Не удалось распознать идентификатор пользователя: " +
+                    "значение " + supposedId);
+        }
+        User user = userStorage.getUserById(userId);
+        if (user == null) {
+            throw new NotFoundException("Пользователь с идентификатором " +
+                    userId + " не зарегистрирован!");
+        }
+        return user;
     }
 }
 

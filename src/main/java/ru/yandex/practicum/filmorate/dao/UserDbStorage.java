@@ -79,13 +79,9 @@ public class UserDbStorage implements UserStorage {
         return user;
     }
 
-    @Override
-    public List<User> getUserFriends(Integer userId) {
-        return null;
-    }
 
-    private List<Integer> getIdsFriends(int userId) {
-        String sqlGetFriends = "select FriendID from FRIENDSHIP where UserID = ?";
+    private List<Integer> getUserFriends(Integer userId) {
+        String sqlGetFriends = "select FriendID from FRIENDSHIP where UserID= ?";
         return jdbcTemplate.queryForList(sqlGetFriends, Integer.class, userId);
     }
 
@@ -123,7 +119,7 @@ public class UserDbStorage implements UserStorage {
                 rs.getString("Login"),
                 rs.getString("Name"),
                 Objects.requireNonNull(rs.getDate("BirthDay")).toLocalDate(),
-                getIdsFriends(userId));
+                getUserFriends(userId));
         return user;
     }
 }
