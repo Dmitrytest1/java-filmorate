@@ -1,79 +1,105 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
+import ru.yandex.practicum.filmorate.exception.WrongIdException;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.exception.FilmValidationException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class FilmService {
     private static int increment = 0;
+
     private final Validator validator;
+
     private final FilmStorage filmStorage;
     private final UserService userService;
-    private static final LocalDate START_DATA = LocalDate.of(1895, 12, 28);
 
     @Autowired
-    public FilmService(Validator validator, @Qualifier("FilmDbStorage") FilmStorage filmStorage,
+    public FilmService(Validator validator, @Qualifier("DBFilmStorage") FilmStorage filmStorage,
                        @Autowired(required = false) UserService userService) {
         this.validator = validator;
         this.filmStorage = filmStorage;
         this.userService = userService;
     }
 
-
-    public List<Film> getAllFilms() {
+    /**
+     * Возвращает коллекцию фильмов
+     * */
+    public Collection<Film> getFilms() {
         return filmStorage.getAllFilms();
     }
 
-    public Film getFilmById(Integer id) {
-        return filmStorage.getFilmById(id);
-    }
-
-    public List<Film> getFilmsPopular(Integer count) {
-        return filmStorage.getFilmsPopular(count);
-    }
-
-    public Film createFilm(Film film) {
+    /**
+     * Добавляет фильм в коллекцию
+     * Возвращает добавленный фильм
+     * @exception FilmValidationException в случае, если фильм содержит недопустимое содержание полей
+     * */
+    public Film add(Film film) {
         validate(film);
-        validateReleaseDate(film, "Добавлен");
-        return filmStorage.create(film);
+        return filmStorage.addFilm(film);
     }
 
-    public Film updateFilm(Film film) {
+    /**
+     * Обновляет фильм в коллекции
+     * Возвращает обновленный фильм
+     * @exception FilmValidationException в случае, если фильм содержит недопустимое содержание полей
+     * */
+    public Film update(Film film) {
         validate(film);
-        validateReleaseDate(film, "Обновлен");
-        return filmStorage.update(film);
+        return filmStorage.updateFilm(film);
     }
 
-    public void addLike(Integer filmId, Integer userId) {
-        userService.getUserById(userId);
-        filmStorage.addLike(filmId, userId);
-        log.info("like for film with id={} added", filmId);
+    /**
+     * Добавляет лайк пользователя к фильму в коллекции
+     * */
+    public void addLike(final String id, final String userId) {
+        Film film = getStoredFilm(id);
+        User user = userService.getUser(userId);
+        filmStorage.addLike(film.getId(), user.getId());
     }
 
-    public void deleteLike(Integer filmId, Integer userId) {
-        userService.getUserById(userId);
-        filmStorage.deleteLike(filmId, userId);
-        log.info("like for film with id={} deleted", filmId);
+    /**
+     * Удаляет лайк пользователя к фильму в коллекции
+     * */
+    public void deleteLike(final String id, final String userId) {
+        Film film = getStoredFilm(id);
+        User user = userService.getUser(userId);
+        filmStorage.deleteLike(film.getId(), user.getId());
     }
 
-    public void validateReleaseDate(Film film, String text) {
-        if (film.getReleaseDate().isBefore(START_DATA)) {
-            throw new ValidationException("Дата релиза не может быть раньше " + START_DATA);
+    /**
+     * Возвращает коллекцию фильмов с наибольшим количеством лайков.
+     * @param count задает ограничение количества фильмов,
+     * если параметр не задан, будут возвращены первые 10 фильмов
+     * */
+    public Collection<Film> getMostPopularFilms(final String count) {
+        Integer size = intFromString(count);
+        if (size == Integer.MIN_VALUE) {
+            size = 10;
         }
-        log.debug("{} фильм: {}", text, film.getName());
+        Collection<Film> films = filmStorage.getMostPopularFilms(size);
+        return films;
+    }
+
+    /**
+     * Возврашает фильм из коллекции по идентификатору
+     * @param id - идентификатор фильма
+     * @exception WrongIdException в случае, если программе не удастся распознать идентификатор
+     * @exception NotFoundException в случае, если фильм по идентификатору отсутствует
+     * */
+    public Film getFilm(String id) {
+        return getStoredFilm(id);
     }
 
     private void validate(Film film) {
@@ -91,6 +117,28 @@ public class FilmService {
     }
 
     private static int getNextId() {
-        return ++increment;
+       return ++increment;
+    }
+
+    private Integer intFromString(final String supposedInt) {
+        try {
+            return Integer.valueOf(supposedInt);
+        } catch (NumberFormatException exception) {
+            return Integer.MIN_VALUE;
+        }
+    }
+
+    private Film getStoredFilm(final String supposedId) {
+        final int filmId = intFromString(supposedId);
+        if (filmId == Integer.MIN_VALUE) {
+            throw new WrongIdException("Не удалось распознать идентификатор фильма: " +
+                    "значение " + supposedId);
+        }
+        Film film = filmStorage.getFilm(filmId);
+        if (film == null) {
+            throw new NotFoundException("Фильм с идентификатором " +
+                    filmId + " не зарегистрирован!");
+        }
+        return film;
     }
 }

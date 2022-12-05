@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao;
+package ru.yandex.practicum.filmorate.storage.dao;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,20 +11,20 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 @Component
-public class MpaDbStorage {
+public class DBMpaStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    public MpaDbStorage(JdbcTemplate jdbcTemplate) {
+    public DBMpaStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     public Collection<Mpa> getAllMpa() {
-        String sqlMpa = "select * from RatingMPA";
+        String sqlMpa = "select * from RATINGMPA";
         return jdbcTemplate.query(sqlMpa, this::makeMpa);
     }
 
     public Mpa getMpaById(int mpaId) {
-        String sqlMpa = "select * from RatingMPA where RatingID = ?";
+        String sqlMpa = "select * from RATINGMPA where RATINGID = ?";
         Mpa mpa;
         try {
             mpa = jdbcTemplate.queryForObject(sqlMpa, this::makeMpa, mpaId);
@@ -42,4 +42,5 @@ public class MpaDbStorage {
                 rs.getString("Description"));
         return mpa;
     }
+
 }

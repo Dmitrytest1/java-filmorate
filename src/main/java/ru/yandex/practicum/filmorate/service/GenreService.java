@@ -2,42 +2,43 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.GenreDbStorage;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.dao.DBGenreStorage;
 
-import java.util.List;
+import java.util.Collection;
 
 @Service
 public class GenreService {
-    private final GenreDbStorage genreDbStorage;
+
+    private final DBGenreStorage dbGenreStorage;
 
     @Autowired
-    public GenreService(GenreDbStorage genreDbStorage) {
-        this.genreDbStorage = genreDbStorage;
+    public GenreService(DBGenreStorage dbGenreStorage) {
+        this.dbGenreStorage = dbGenreStorage;
     }
 
-    public boolean addFilmGenres(int filmId, List<Genre> genres) {
-        return genreDbStorage.addFilmGenres(filmId, genres);
+    public Collection<Genre> getAllGenres() {
+        return dbGenreStorage.getAllGenres();
     }
 
-    public List<Genre> getAllGenres() {
-        return genreDbStorage.getAllGenres();
+    public Collection<Genre> getFilmGenres(int filmId) {
+        return dbGenreStorage.getGenresByFilmId(filmId);
     }
 
-    public Genre getGenreById(String supposedId) {
-        int genreId = parseId(supposedId);
-        return genreDbStorage.getGenreById(genreId);
-    }
-
-    public List<Genre> getFilmGenres(int filmId) {
-        return genreDbStorage.getGenresByFilmId(filmId);
+    public Genre getGenre(String supposedId) {
+        int genreId = intFromString(supposedId);
+        return dbGenreStorage.getGenreById(genreId);
     }
 
     public boolean deleteFilmGenres(int filmId) {
-        return genreDbStorage.deleteFilmGenres(filmId);
+       return dbGenreStorage.deleteFilmGenres(filmId);
     }
 
-    private Integer parseId(final String supposedInt) {
+    public boolean addFilmGenres(int filmId, Collection<Genre> genres) {
+        return dbGenreStorage.addFilmGenres(filmId, genres);
+    }
+
+    private Integer intFromString(final String supposedInt) {
         try {
             return Integer.valueOf(supposedInt);
         } catch (NumberFormatException exception) {

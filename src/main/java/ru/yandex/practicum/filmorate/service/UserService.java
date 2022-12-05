@@ -8,106 +8,113 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserValidationException;
 import ru.yandex.practicum.filmorate.exception.WrongIdException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
-@Service
 @Slf4j
+@Service
 public class UserService {
     private int increment = 0;
     private final Validator validator;
+
     private final UserStorage userStorage;
 
     @Autowired
-    public UserService(Validator validator, @Qualifier("UserDbStorage") UserStorage userStorage) {
+    public UserService(Validator validator,@Qualifier("DBUserStorage") UserStorage userStorage) {
         this.validator = validator;
         this.userStorage = userStorage;
     }
 
     /**
-     * Получение всех пользователей
-     */
-    public List<User> getAllUsers() {
+     * Возвращает коллекцию пользователей
+     * */
+    public Collection<User> getAllUsers() {
         return userStorage.getAllUsers();
     }
 
     /**
-     * Получение пользователя
-     */
-    public User getUserById(Integer userId) {
-        return userStorage.getUserById(userId);
-    }
-
-    /**
-     * Создание нового пользователя
-     */
-    public User createUser(User user) {
+     * Добавляет пользователя в коллекцию
+     * Возвращает добавленного пользователя
+     * @exception UserValidationException в случае, если пользователь содержит недопустимое содержание полей
+     * */
+    public User add(final User user) {
         validate(user);
-        setUserNameByLogin(user, "Добавлен");
-        return userStorage.create(user);
+        return userStorage.addUser(user);
     }
 
     /**
-     * Редактирование пользователя
-     */
-    public User updateUser(User user) {
+     * Обновляет пользователя в коллекции
+     * Возвращает обновленного пользователя
+     * @exception UserValidationException в случае, если пользователь содержит недопустимое содержание полей
+     * */
+    public User update(final User user) {
         validate(user);
-        setUserNameByLogin(user, "Обновлен");
-        return userStorage.update(user);
+        return userStorage.updateUser(user);
     }
 
     /**
-     * Добавление в список друзей
-     */
-    public void addFriend(String userId, String friendId) {
-        User user = getStoredUser(userId);
-        User friend = getStoredUser(friendId);
+     * Добавляет пользователя в друзья другому пользователю
+     * @param supposedUserId - идентификатор пользователя
+     * @param supposedFriendId - идентификатор друга
+     * */
+    public void addFriend(final String supposedUserId, final String supposedFriendId) {
+        User user = getStoredUser(supposedUserId);
+        User friend = getStoredUser(supposedFriendId);
         userStorage.addFriend(user.getId(), friend.getId());
     }
 
     /**
-     * Удаление из списка друзей
-     */
-    public void deleteFriend(Integer userId, Integer friendId) {
-        User user = getUserById(userId);
-        User friend = getUserById(friendId);
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(userId);
-        log.debug("Пользователь с id {} удален из списка друзей пользователем с id {}", userId, friendId);
+     * Удаляет пользователя из друзей другого пользователя
+     * @param supposedUserId - идентификатор пользователя
+     * @param supposedFriendId - идентификатор друга
+     * */
+    public void deleteFriend(final String supposedUserId, final  String supposedFriendId) {
+        User user = getStoredUser(supposedUserId);
+        User friend = getStoredUser(supposedFriendId);
+        userStorage.deleteFriend(user.getId(), friend.getId());
     }
 
     /**
-     * Получение всех друзей пользователя
-     */
-    public List<User> getUserFriends(final String userId) {
-        User user = getStoredUser(userId);
-        List<User> friends = new ArrayList<>();
+     * Возвращает коллекцию пользователей, которые являются друзьями для заданного пользователя
+     * @param supposedUserId - идентификатор пользователя
+     * */
+    public Collection<User> getFriends(final String supposedUserId) {
+        User user = getStoredUser(supposedUserId);
+        Collection<User> friends = new HashSet<>();
         for (Integer id : user.getFriends()) {
-            friends.add(userStorage.getUserById(id));
+            friends.add(userStorage.getUser(id));
         }
         return friends;
     }
 
     /**
-     * Получение общих друзей с другим пользователем
-     */
-    public Set<User> getMutualFriends(Integer userId, Integer otherId) {
-        return getUserById(userId).getFriendsId()
-                .stream()
-                .filter(getUserById(otherId).getFriendsId()::contains)
-                .map(this::getUserById)
-                .collect(Collectors.toSet());
+     * Возвращает коллекцию пользователей, которые являются общими друзьями двух заданных пользователей
+     * @param supposedUserId - идентификатор пользователя
+     * @param supposedOtherId - идентификатор другого пользователя
+     * */
+    public Collection<User> getCommonFriends(final String supposedUserId, final String supposedOtherId) {
+        User user = getStoredUser(supposedUserId);
+        User otherUser = getStoredUser(supposedOtherId);
+        Collection<User> commonFriends = new HashSet<>();
+        for (Integer id : user.getFriends()) {
+            if (otherUser.getFriends().contains(id)) {
+                commonFriends.add(userStorage.getUser(id));
+            }
+        }
+        return commonFriends;
     }
 
-    public void setUserNameByLogin(User user, String text) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        log.debug("{} пользователь: {}, email: {}", text, user.getName(), user.getEmail());
+    /**
+     * Возвращает пользователя по идентификатора
+     * @param supposedId - идентификатор пользователя
+     * */
+    public User getUser(final String supposedId) {
+        return getStoredUser(supposedId);
     }
 
     private void validate(final User user) {
@@ -146,7 +153,7 @@ public class UserService {
             throw new WrongIdException("Не удалось распознать идентификатор пользователя: " +
                     "значение " + supposedId);
         }
-        User user = userStorage.getUserById(userId);
+        User user = userStorage.getUser(userId);
         if (user == null) {
             throw new NotFoundException("Пользователь с идентификатором " +
                     userId + " не зарегистрирован!");
@@ -154,4 +161,3 @@ public class UserService {
         return user;
     }
 }
-

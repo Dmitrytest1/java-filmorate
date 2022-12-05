@@ -23,13 +23,13 @@ public class MpaController {
     }
 
     @GetMapping
-    public Collection<Mpa> getAll() {
+    public Collection<Mpa> findAll() {
         log.info("Получен запрос GET к эндпоинту: /mpa");
         return mpaService.getAllMpa();
     }
 
     @GetMapping("/{id}")
-    public Mpa getMpaById(@PathVariable String id) {
+    public Mpa findGenre(@PathVariable String id) {
         log.info("Получен запрос GET к эндпоинту: /mpa/{}", id);
         return mpaService.getMpa(id);
     }
