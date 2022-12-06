@@ -26,22 +26,7 @@ class DBFilmStorageTest {
     @Test
     public void testGetFilmById() {
 
-        Film createFilm = new Film();
-        createFilm.setMpa(new Mpa(1,"mpa", "desc"));
-        createFilm.setName("new film");
-        createFilm.setDescription("desc");
-        createFilm.setReleaseDate(LocalDate.now().minusYears(10));
-        createFilm.setDuration(60);
-        createFilm.setRate(5);
-        filmStorage.addFilm(createFilm);
-
-        Film dbFilm = filmStorage.getFilm(1);
-        assertThat(dbFilm).hasFieldOrPropertyWithValue("id", 1);
-    }
-
-    @Test
-    void getAllFilms() {
-        Film first = new Film(0,
+        Film createFilm = new Film(1,
                 "first",
                 "first description",
                 LocalDate.now().minusYears(8),
@@ -50,7 +35,24 @@ class DBFilmStorageTest {
                 new Mpa(1,"o","o"),
                 new ArrayList<>(),
                 new ArrayList<>());
-        Film second = new Film(0,
+        filmStorage.addFilm(createFilm);
+
+        Film dbFilm = filmStorage.getFilm(1);
+        assertThat(dbFilm).hasFieldOrPropertyWithValue("id", 1);
+    }
+
+    @Test
+    void getAllFilms() {
+        Film first = new Film(1,
+                "first",
+                "first description",
+                LocalDate.now().minusYears(8),
+                90L,
+                3,
+                new Mpa(1,"o","o"),
+                new ArrayList<>(),
+                new ArrayList<>());
+        Film second = new Film(2,
                 "second",
                 "second description",
                 LocalDate.now().minusYears(15),
@@ -68,7 +70,7 @@ class DBFilmStorageTest {
 
     @Test
     void updateFilm() {
-        Film first = new Film(0,
+        Film first = new Film(1,
                 "first",
                 "first description",
                 LocalDate.now().minusYears(8),
@@ -86,7 +88,7 @@ class DBFilmStorageTest {
 
     @Test
     void deleteFilm() {
-        Film first = new Film(0,
+        Film first = new Film(1,
                 "first",
                 "first description",
                 LocalDate.now().minusYears(8),
