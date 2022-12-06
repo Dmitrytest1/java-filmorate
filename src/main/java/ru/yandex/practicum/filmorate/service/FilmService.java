@@ -14,7 +14,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
@@ -88,8 +87,7 @@ public class FilmService {
         if (size == Integer.MIN_VALUE) {
             size = 10;
         }
-        Collection<Film> films = filmStorage.getMostPopularFilms(size);
-        return films;
+        return filmStorage.getMostPopularFilms(size);
     }
 
     /**

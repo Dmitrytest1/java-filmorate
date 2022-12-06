@@ -43,7 +43,6 @@ class UserControllerTest {
                 "Correct Name",
                 LocalDate.of(2002, 1, 1),
                 new ArrayList<>());
-
         Mockito.when(userController.findAll()).thenReturn(Collections.singletonList(user));
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())

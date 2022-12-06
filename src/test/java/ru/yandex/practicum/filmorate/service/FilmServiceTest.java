@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class FilmServiceTest {
     @Autowired
-    FilmService service;
+    private FilmService service;
 
     @Test
     void shouldAddWhenAddValidFilmData() {

@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserServiceTest {
 
     @Autowired
-    UserService service;
+    private UserService service;
 
     @Test
     void shouldAddUserWhenValidUserData() {

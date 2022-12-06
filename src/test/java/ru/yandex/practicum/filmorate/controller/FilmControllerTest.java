@@ -38,7 +38,6 @@ class FilmControllerTest {
         film.setDescription("Correct description");
         film.setReleaseDate(LocalDate.of(1995,5,26));
         film.setDuration(100L);
-
         Mockito.when(filmController.findAll()).thenReturn(Collections.singletonList(film));
         mockMvc.perform(get("/films"))
                 .andExpect(status().isOk())

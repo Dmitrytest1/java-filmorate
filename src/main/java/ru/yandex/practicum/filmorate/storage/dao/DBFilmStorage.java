@@ -56,7 +56,7 @@ public class DBFilmStorage implements FilmStorage {
     public Collection<Film> getAllFilms() {
         String sql = "select * from FILM " +
                 "INNER JOIN RATINGMPA R on FILM.RATINGID = R.RATINGID ";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> makeFilm(resultSet));
     }
 
     @Override
@@ -66,14 +66,14 @@ public class DBFilmStorage implements FilmStorage {
                 "values (?, ?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, film.getName());
-            ps.setString(2, film.getDescription());
-            ps.setDate(3, Date.valueOf(film.getReleaseDate()));
-            ps.setLong(4, film.getDuration());
-            ps.setInt(5, film.getRate());
-            ps.setInt(6, Math.toIntExact(film.getMpa().getId()));
-            return ps;
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, film.getName());
+            preparedStatement.setString(2, film.getDescription());
+            preparedStatement.setDate(3, Date.valueOf(film.getReleaseDate()));
+            preparedStatement.setLong(4, film.getDuration());
+            preparedStatement.setInt(5, film.getRate());
+            preparedStatement.setInt(6, Math.toIntExact(film.getMpa().getId()));
+            return preparedStatement;
         }, keyHolder);
 
         int id = Objects.requireNonNull(keyHolder.getKey()).intValue();
@@ -131,9 +131,9 @@ public class DBFilmStorage implements FilmStorage {
             String setLike = "insert into LIKES (USERID, FILMID) values (?, ?) ";
             jdbcTemplate.update(setLike, userId, filmId);
         }
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, userId, filmId);
-        log.info(String.valueOf(rs.next()));
-        return rs.next();
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sql, userId, filmId);
+        log.info(String.valueOf(sqlRowSet.next()));
+        return sqlRowSet.next();
     }
 
     @Override
@@ -153,31 +153,28 @@ public class DBFilmStorage implements FilmStorage {
                 "group by FILM.FILMID " +
                 "ORDER BY likeRate desc " +
                 "limit ?";
-        Collection<Film> films = jdbcTemplate.query(sqlMostPopular, (rs, rowNum) -> makeFilm(rs), count);
-        return films;
+        return jdbcTemplate.query(sqlMostPopular, (rs, rowNum) -> makeFilm(rs), count);
     }
 
-    private Film makeFilm(ResultSet rs) throws SQLException {
-        int filmId = rs.getInt("FilmID");
-        Film film = new Film(
+    private Film makeFilm(ResultSet resultSet) throws SQLException {
+        int filmId = resultSet.getInt("FilmID");
+        return new Film(
                 filmId,
-                rs.getString("Name"),
-                rs.getString("Description"),
-                Objects.requireNonNull(rs.getDate("ReleaseDate")).toLocalDate(),
-                rs.getLong("Duration"),
-                rs.getInt("Rate"),
-                new Mpa(rs.getInt("RatingMPA.RatingID"),
-                        rs.getString("RatingMPA.Name"),
-                        rs.getString("RatingMPA.Description")),
+                resultSet.getString("Name"),
+                resultSet.getString("Description"),
+                Objects.requireNonNull(resultSet.getDate("ReleaseDate")).toLocalDate(),
+                resultSet.getLong("Duration"),
+                resultSet.getInt("Rate"),
+                new Mpa(resultSet.getInt("RatingMPA.RatingID"),
+                        resultSet.getString("RatingMPA.Name"),
+                        resultSet.getString("RatingMPA.Description")),
                 (List<Genre>) genreService.getFilmGenres(filmId),
                 getFilmLikes(filmId));
-        return film;
     }
 
     private List<Integer> getFilmLikes(int filmId) {
         String sqlGetLikes = "select USERID from LIKES where FILMID = ?";
-        List<Integer> likes = jdbcTemplate.queryForList(sqlGetLikes, Integer.class, filmId);
-        return likes;
+        return jdbcTemplate.queryForList(sqlGetLikes, Integer.class, filmId);
     }
 
 }

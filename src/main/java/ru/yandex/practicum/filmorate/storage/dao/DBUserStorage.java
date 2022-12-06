@@ -21,6 +21,7 @@ public class DBUserStorage implements UserStorage {
     public DBUserStorage(JdbcTemplate jdbcTemplate){
         this.jdbcTemplate = jdbcTemplate;
     }
+
     @Override
     public User getUser(Integer id) {
         String sqlUser = "select * from USERS where USERID = ?";
@@ -48,13 +49,13 @@ public class DBUserStorage implements UserStorage {
                 "values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, user.getEmail());
-            ps.setString(2, user.getLogin());
-            ps.setString(3, user.getName());
-            ps.setDate(4, Date.valueOf(user.getBirthday()));
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, user.getEmail());
+            preparedStatement.setString(2, user.getLogin());
+            preparedStatement.setString(3, user.getName());
+            preparedStatement.setDate(4, Date.valueOf(user.getBirthday()));
 
-            return ps;
+            return preparedStatement;
         }, keyHolder);
 
         int id = Objects.requireNonNull(keyHolder.getKey()).intValue();
@@ -80,20 +81,19 @@ public class DBUserStorage implements UserStorage {
 
     @Override
     public boolean deleteUser(User user) {
-
-        return false;
+        String sqlQuery = "delete from USERS where USERID = ?";
+        return jdbcTemplate.update(sqlQuery, user.getId()) > 0;
     }
 
-    private User makeUser(ResultSet rs) throws SQLException {
-        int userId = rs.getInt("UserID");
-        User user = new User(
+    private User makeUser(ResultSet resultSet) throws SQLException {
+        int userId = resultSet.getInt("UserID");
+        return new User(
                 userId,
-                rs.getString("Email"),
-                rs.getString("Login"),
-                rs.getString("Name"),
-                Objects.requireNonNull(rs.getDate("BirthDay")).toLocalDate(),
+                resultSet.getString("Email"),
+                resultSet.getString("Login"),
+                resultSet.getString("Name"),
+                Objects.requireNonNull(resultSet.getDate("BirthDay")).toLocalDate(),
                 getUserFriends(userId));
-        return user;
     }
 
     private List<Integer> getUserFriends(int userId) {
@@ -106,8 +106,8 @@ public class DBUserStorage implements UserStorage {
         boolean friendAccepted;
         String sqlGetReversFriend = "select * from FRIENDSHIP " +
                 "where USERID = ? and FRIENDID = ?";
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(sqlGetReversFriend, friendId, userId);
-        friendAccepted = rs.next();
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sqlGetReversFriend, friendId, userId);
+        friendAccepted = sqlRowSet.next();
         String sqlSetFriend = "insert into FRIENDSHIP (USERID, FRIENDID, STATUS) " +
                 "VALUES (?,?,?)";
         jdbcTemplate.update(sqlSetFriend, userId, friendId, friendAccepted);
